@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">News Stand</string>
+    <string name="no_network_error">No Network</string>
+    <string name="something_went_wrong">Something went wrong</string>
+
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_news">News</string>
+    <string name="title_saved">Saved</string>
+    <string name="title_sources">Sources</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="popular">Popular</string>
+    <string name="technology">Technology</string>
+    <string name="business">Business</string>
+    <string name="s_saved_news">Saved News</string>
+    <string name="s_headlines">Headlines</string>
+    <string name="s_sources">Sources</string>
+</resources>
