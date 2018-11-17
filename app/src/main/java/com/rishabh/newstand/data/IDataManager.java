@@ -14,4 +14,6 @@ interface IDataManager {
     Call<HeadlinesResponse> getHeadlines(HashMap<String,String> hashMap);
 
     Call<SourcesResponse> getSources(HashMap<String,String> hashMap);
+
+    Call<HeadlinesResponse> getSearch(HashMap<String, String> hashMap);
 }

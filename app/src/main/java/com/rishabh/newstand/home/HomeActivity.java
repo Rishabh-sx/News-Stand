@@ -1,5 +1,6 @@
 package com.rishabh.newstand.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -11,6 +12,7 @@ import com.rishabh.newstand.R;
 import com.rishabh.newstand.base.BaseActivity;
 import com.rishabh.newstand.home.news.NewsFragment;
 import com.rishabh.newstand.home.news.headlines.HeadLinesFragment;
+import com.rishabh.newstand.home.search.SearchActivity;
 import com.rishabh.newstand.home.sources.SourcesFragment;
 import com.rishabh.newstand.utils.AppConstants;
 
@@ -69,6 +71,7 @@ public class HomeActivity extends BaseActivity implements HomeView {
 
     @OnClick(R.id.iv_search)
     public void onViewClicked() {
+startActivity(new Intent(this, SearchActivity.class));    }
 
-    }
+
 }

@@ -188,7 +188,12 @@ public class MovieDetails extends BaseActivity implements MovieDetailView {
         }).into(image);
 
         title.setText(article.getTitle());
-        description.setText(article.getContent());
+        if (article.getContent()!=null) {
+            String content[]= article.getContent().split("\\s+(?=\\[)");
+            String viewMore = content[1];
+            String message=content[0];
+            description.setText(String.format("%s %s",message,viewMore.replace(viewMore,"view more")));
+        }
 
     }
 

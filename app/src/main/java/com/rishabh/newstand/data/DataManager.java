@@ -61,4 +61,9 @@ public class DataManager implements IDataManager {
     public Call<SourcesResponse> getSources(HashMap<String, String> hashMap) {
         return apiManager.getSources(hashMap);
     }
+
+    @Override
+    public Call<HeadlinesResponse> getSearch(HashMap<String, String> hashMap) {
+        return apiManager.search(hashMap);
+    }
 }

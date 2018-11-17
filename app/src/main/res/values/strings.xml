@@ -18,4 +18,8 @@
     <string name="s_saved_news">Saved News</string>
     <string name="s_headlines">Headlines</string>
     <string name="s_sources">Sources</string>
+<!--
+    Search Activity
+-->
+    <string name="s_search">Search</string>
 </resources>

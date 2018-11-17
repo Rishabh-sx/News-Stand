@@ -39,4 +39,8 @@ public class ApiManager {
     public Call<SourcesResponse> getSources(HashMap<String,String> hashMap) {
         return apiClient.getSources(hashMap);
     }
+
+    public Call<HeadlinesResponse> search(HashMap<String, String> hashMap) {
+        return apiClient.search(hashMap);
+    }
 }

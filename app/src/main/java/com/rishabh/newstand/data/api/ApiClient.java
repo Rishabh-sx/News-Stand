@@ -20,4 +20,6 @@ interface ApiClient {
     @GET("sources")
     Call<SourcesResponse> getSources(@QueryMap HashMap<String,String> hashMap);
 
+    @GET("everything")
+    Call<HeadlinesResponse> search(@QueryMap HashMap<String, String> hashMap);
 }
