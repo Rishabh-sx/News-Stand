@@ -15,6 +15,5 @@ final public class AppConstants {
     public static final String KEY_SAVED_INSTANCE = "savedInstance";
     public static final String KEY_LANGUAGE ="language" ;
 
-
     public static String KEY = "key";
 }

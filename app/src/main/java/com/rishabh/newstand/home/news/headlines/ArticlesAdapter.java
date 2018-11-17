@@ -12,8 +12,13 @@ import com.bumptech.glide.Glide;
 import com.rishabh.newstand.R;
 import com.rishabh.newstand.pojo.headlinesresponse.Article;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,6 +80,7 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.Headli
             holder.title.setText(article.getTitle());
             holder.time.setText(article.getPublishedAt());
             holder.itemView.setOnClickListener(this);
+
         }
 
         @Override
@@ -86,5 +92,4 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.Headli
     public interface ArticleListener {
         void itemClicked(Article result);
     }
-
 }

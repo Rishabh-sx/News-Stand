@@ -32,9 +32,8 @@ public class SourcesPresenter extends BasePresenter<SourcesView> implements Sour
     }
 
     public void onViewCreated() {
-
-        setModel();
         model.getSources();
+        setupView();
     }
 
     public void fragmentConfigChanged() {
@@ -42,8 +41,8 @@ public class SourcesPresenter extends BasePresenter<SourcesView> implements Sour
     }
 
     private void setupView() {
-    if(getView()!=null)
-        getView().initView();
+        if (getView() != null)
+            getView().initView();
         getView().initListeners();
     }
 }
