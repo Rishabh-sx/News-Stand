@@ -4,6 +4,7 @@ package com.rishabh.newstand.home.sources;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.rishabh.newstand.R;
 import com.rishabh.newstand.base.BaseFragment;
@@ -61,9 +63,9 @@ public class SourcesFragment extends BaseFragment implements SourcesView, Articl
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if(savedInstanceState!=null && savedInstanceState.getBoolean(AppConstants.KEY_SAVED)){
+        if (savedInstanceState != null && savedInstanceState.getBoolean(AppConstants.KEY_SAVED)) {
             presenter.fragmentConfigChanged();
-        }else {
+        } else {
             presenter.onViewCreated();
         }
     }
@@ -92,7 +94,7 @@ public class SourcesFragment extends BaseFragment implements SourcesView, Articl
 
     @Override
     public void itemClicked(Article result) {
-    //    getActivity().startActivity(new Intent(getActivity(), MovieDetails.class).putExtra(AppConstants.KEY_ARTICLE, result));
+        //    getActivity().startActivity(new Intent(getActivity(), MovieDetails.class).putExtra(AppConstants.KEY_ARTICLE, result));
     }
 
     @Override
@@ -124,6 +126,13 @@ public class SourcesFragment extends BaseFragment implements SourcesView, Articl
 
     @Override
     public void itemClicked(Source result) {
-
+        try {
+            String url = result.getUrl();
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), "Browser not found", Toast.LENGTH_SHORT).show();
+        }
     }
 }

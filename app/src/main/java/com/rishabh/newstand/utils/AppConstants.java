@@ -16,6 +16,5 @@ final public class AppConstants {
     public static final String KEY_LANGUAGE ="language" ;
     public static final String KEY_QUERY = "q";
 
-
     public static String KEY = "key";
 }
