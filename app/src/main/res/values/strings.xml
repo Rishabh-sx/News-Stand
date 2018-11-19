@@ -18,8 +18,14 @@
     <string name="s_saved_news">Saved News</string>
     <string name="s_headlines">Headlines</string>
     <string name="s_sources">Sources</string>
-<!--
+    <!--
     Search Activity
 -->
     <string name="s_search">Search</string>
+    <string name="s_view_more">view more</string>
+    <string name="s_widget_title">New Stand - Popular</string>
+    <string name="s_brwoser_not_found">Browser not found</string>
+    <string name="s_no_iten_avialable">No Item Available !</string>
+    <string name="s_browser_not_found">Browser not found</string>
+    <string name="s_share_news">Share News</string>
 </resources>

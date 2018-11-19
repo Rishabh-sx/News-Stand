@@ -1,9 +1,11 @@
 package com.rishabh.newstand.home.news.newsDetail;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -15,11 +17,18 @@ import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.transition.Slide;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
@@ -49,11 +58,6 @@ public class MovieDetails extends BaseActivity implements MovieDetailView {
     TextView description;
     @BindView(R.id.scroll)
     NestedScrollView scroll;
-    /*@BindView(R.id.tv_rating)
-    TextView tvRating;
-    @BindView(R.id.tv_vote)
-    TextView tvVote;
-    */
     @BindView(R.id.rv_trailers)
     RecyclerView rvTrailers;
     @BindView(R.id.card_trailers)
@@ -69,6 +73,7 @@ public class MovieDetails extends BaseActivity implements MovieDetailView {
     private MovieDetailPresenter movieDetailPresenter;
     private boolean isReviewQueried;
     private boolean isTrailerQueried;
+    private boolean isSearchedArticle;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -76,10 +81,15 @@ public class MovieDetails extends BaseActivity implements MovieDetailView {
         super.onCreate(savedInstanceState);
         initActivityTransitions();
         article = getArticle();
+        isSearchedArticle = isSearched();
         ButterKnife.bind(this);
         movieDetailPresenter = new MovieDetailPresenter(this);
         movieDetailPresenter.initView();
 
+    }
+
+    private boolean isSearched() {
+        return getIntent().getBooleanExtra(AppConstants.KEY_SEARCHED_ARTICLE,false);
     }
 
     private Article getArticle() {
@@ -159,6 +169,11 @@ public class MovieDetails extends BaseActivity implements MovieDetailView {
         collapsingToolbarLayout.setTitle(itemTitle);
         collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
 
+        if(isSearchedArticle){
+            markFavUnfave.setVisibility(View.GONE);
+        }else {
+            markFavUnfave.setVisibility(View.VISIBLE);
+        }
         Glide.with(image.getContext())
                 .load(article.getUrlToImage())
                 .asBitmap().listener(new RequestListener<String, Bitmap>() {
@@ -190,11 +205,40 @@ public class MovieDetails extends BaseActivity implements MovieDetailView {
         title.setText(article.getTitle());
         if (article.getContent()!=null) {
             String content[]= article.getContent().split("\\s+(?=\\[)");
-            String viewMore = content[1];
-            String message=content[0];
-            description.setText(String.format("%s %s",message,viewMore.replace(viewMore,"view more")));
+            if(content.length >=2) {
+                String viewMore = content[1];
+                String message = content[0];
+            description.setText(String.format("%s %s",message,viewMore.replace(viewMore,
+                    getString(R.string.s_view_more))));
+            addClickToViewMore();
+            }
         }
 
+    }
+
+    private void addClickToViewMore() {
+        Spannable span = Spannable.Factory.getInstance().newSpannable(description.getText().toString());
+        span.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    String url = article.getUrl();
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(url));
+                    startActivity(i);
+                } catch (Exception e) {
+                    Toast.makeText(MovieDetails.this, getString(R.string.s_brwoser_not_found), Toast.LENGTH_SHORT).show();
+                }
+            } }, description.getText().toString().indexOf(getString(R.string.s_view_more)),
+                description.getText().toString().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+       span.setSpan(new ForegroundColorSpan(getColor(R.color.colorAccent)),description.getText().toString().indexOf(getString(R.string.s_view_more)),
+               description.getText().toString().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
+        description.setText(span);
+        description.setMovementMethod(LinkMovementMethod.getInstance());
+        updateArticleSaveIcon(article.isSaved());
     }
 
     @OnClick(R.id.mark_fav_unfave)
@@ -205,7 +249,12 @@ public class MovieDetails extends BaseActivity implements MovieDetailView {
     }
 
     private void updateArticleSaveIcon(boolean saved) {
-        //Todo do action here
+
+        if (saved) {
+            markFavUnfave.setImageResource(R.drawable.ic_mark_saved);
+        } else {
+            markFavUnfave.setImageResource(R.drawable.ic_saved);
+        }
     }
 
     @Override

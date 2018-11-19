@@ -1,10 +1,10 @@
-
-
-
 package com.rishabh.newstand.home.search.searched;
 
 
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,11 +20,18 @@ import android.widget.TextView;
 
 import com.rishabh.newstand.R;
 import com.rishabh.newstand.base.BaseFragment;
+import com.rishabh.newstand.home.BaseHost;
+import com.rishabh.newstand.home.news.NewsFragment;
 import com.rishabh.newstand.home.news.headlines.ArticlesAdapter;
 import com.rishabh.newstand.pojo.headlinesresponse.Article;
+import com.rishabh.newstand.utils.AppConstants;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -43,16 +50,28 @@ public class SearchFragment extends BaseFragment implements SearchView, TextWatc
     RecyclerView rvSearchList;
     @BindView(R.id.tv_no_list)
     TextView tvNoList;
-    Unbinder unbinder;
+    private Unbinder unbinder;
     private SearchPresenter mPresenter;
-    private String mSearch;
     private ArticlesAdapter articlesAdapter;
+    private ISearchFragmentHost mHost;
 
     public SearchFragment() {
         // Required empty public constructor
     }
 
+    public interface ISearchFragmentHost extends BaseHost {
+    }
 
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (getActivity() instanceof ISearchFragmentHost) {
+            mHost = (ISearchFragmentHost) getActivity();
+        } else {
+            throw new IllegalStateException("Host must Implement ISearchFragmentHost");
+        }
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -61,7 +80,9 @@ public class SearchFragment extends BaseFragment implements SearchView, TextWatc
         unbinder = ButterKnife.bind(this, view);
         mPresenter = new SearchPresenter(this);
         mPresenter.initView();
-
+        if(savedInstanceState!=null && savedInstanceState.containsKey(AppConstants.KEY_SEARCHED_ARTICLE)){
+            setSearchResult(savedInstanceState.<Article>getParcelableArrayList(AppConstants.KEY_SEARCHED_ARTICLE));
+        }
         return view;
     }
 
@@ -87,14 +108,17 @@ public class SearchFragment extends BaseFragment implements SearchView, TextWatc
             ivCancel.setVisibility(View.GONE);
         else
             ivCancel.setVisibility(View.VISIBLE);
-        mSearch = editable.toString();
-        if (editable.toString().length() > 3)
-            mPresenter.getSearchedNews(mSearch);
+
+        if (editable.toString().length() > 2)
+            mPresenter.getSearchedNews(editable.toString());
+        else
+            mPresenter.noSearchQuery();
+
     }
 
     @Override
     public void initViewsAndVariables() {
-        mSearch = "";
+
         etSearch.addTextChangedListener(this);
 
     }
@@ -112,6 +136,32 @@ public class SearchFragment extends BaseFragment implements SearchView, TextWatc
 
     @Override
     public void itemClicked(Article result) {
+        mHost.openArticleDetail(result);
+    }
 
+    @Override
+    public void setSearchResult(List<Article> articles) {
+        articlesAdapter.setArticleList(articles);
+    }
+
+    @Override
+    public void clearAdapter() {
+        articlesAdapter.clearSearchList();
+    }
+
+    @OnClick(R.id.iv_cancel)
+    public void onViewClicked() {
+        etSearch.setText("");
+    }
+
+    @Override
+    public void share(String url) {
+        mHost.share(url);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(AppConstants.KEY_SEARCHED_ARTICLE, (ArrayList<? extends Parcelable>) articlesAdapter.getArticleList());
     }
 }

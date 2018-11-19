@@ -15,6 +15,8 @@ final public class AppConstants {
     public static final String KEY_SAVED_INSTANCE = "savedInstance";
     public static final String KEY_LANGUAGE ="language" ;
     public static final String KEY_QUERY = "q";
+    public static final String KEY_SEARCHED_ARTICLE = "searched";
+    public static final String KEY_SAVED_PREF = "saved_news";
 
-    public static String KEY = "key";
+    public static final String KEY = "key";
 }

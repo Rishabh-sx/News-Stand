@@ -3,7 +3,7 @@ package com.rishabh.newstand.home.news.headlines;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import com.rishabh.newstand.R;
 import com.rishabh.newstand.base.BaseFragment;
 import com.rishabh.newstand.data.database.viewmodel.MainViewModel;
-import com.rishabh.newstand.home.news.newsDetail.MovieDetails;
+import com.rishabh.newstand.home.BaseHost;
 import com.rishabh.newstand.pojo.headlinesresponse.Article;
 import com.rishabh.newstand.utils.AppConstants;
 
@@ -35,15 +35,25 @@ public class HeadLinesFragment extends BaseFragment implements HeadlinesView, Ar
 
     @BindView(R.id.rv)
     RecyclerView rv;
-    Unbinder unbinder;
+    private Unbinder unbinder;
     private HeadlinesPresenter presenter;
     private String fragmentType;
     private ArticlesAdapter articlesAdapter;
+    private IHeadlinesFragmentHost mHost;
 
     public HeadLinesFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof IHeadlinesFragmentHost) {
+            mHost = (IHeadlinesFragmentHost) context;
+        } else {
+            throw new IllegalStateException("Host must Implement IHeadlinesFragmentHost");
+        }
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -105,10 +115,10 @@ public class HeadLinesFragment extends BaseFragment implements HeadlinesView, Ar
     }
 
     @Override
-    public void initListeners(String fragmentType) {
+    public void initListeners(final String fragmentType) {
         MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
-        if(!fragmentType.equals(AppConstants.KEY_SAVED)) {
+        if (!fragmentType.equals(AppConstants.KEY_SAVED)) {
             //Listener for normal fragment
             viewModel.getArticlesByHeadlines(this.fragmentType).observe(this, new Observer<List<Article>>() {
                 @Override
@@ -116,7 +126,7 @@ public class HeadLinesFragment extends BaseFragment implements HeadlinesView, Ar
                     articlesAdapter.setArticleList(articles);
                 }
             });
-        }else {
+        } else {
             //Listener for saved fragments
             viewModel.getSavedArticlesByHeadlines().observe(this, new Observer<List<Article>>() {
                 @Override
@@ -136,6 +146,15 @@ public class HeadLinesFragment extends BaseFragment implements HeadlinesView, Ar
 
     @Override
     public void itemClicked(Article result) {
-        getActivity().startActivity(new Intent(getActivity(), MovieDetails.class).putExtra(AppConstants.KEY_ARTICLE, result));
+        mHost.openArticleDetail(result);
+    }
+
+    public interface IHeadlinesFragmentHost extends BaseHost {
+
+    }
+
+    @Override
+    public void share(String url) {
+        mHost.share(url);
     }
 }

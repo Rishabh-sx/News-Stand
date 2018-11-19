@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.rishabh.newstand.data.api.ApiManager;
 import com.rishabh.newstand.data.database.AppDatabase;
+import com.rishabh.newstand.data.preference.PreferenceManager;
 import com.rishabh.newstand.pojo.headlinesresponse.HeadlinesResponse;
 import com.rishabh.newstand.pojo.sources.SourcesResponse;
 
@@ -19,8 +20,9 @@ import retrofit2.Call;
 public class DataManager implements IDataManager {
 
     private final AppDatabase mDb;
-    private ApiManager apiManager;
+    private final ApiManager apiManager;
     private static DataManager instance;
+    private PreferenceManager preferenceManager;
 
 
     public static void init(Context applicationContext) {
@@ -32,7 +34,12 @@ public class DataManager implements IDataManager {
         return instance;
     }
 
+    public PreferenceManager getPreferenceManager() {
+        return preferenceManager;
+    }
+
     private DataManager(Context applicationContext) {
+        preferenceManager = PreferenceManager.getInstance(applicationContext);
         apiManager = ApiManager.getInstance();
         mDb = AppDatabase.getInstance(applicationContext);
     }

@@ -1,6 +1,9 @@
 package com.rishabh.newstand.home.search.searched;
 
 import com.rishabh.newstand.base.BasePresenter;
+import com.rishabh.newstand.pojo.headlinesresponse.Article;
+
+import java.util.List;
 
 public class SearchPresenter extends BasePresenter<SearchView> implements SearchModelListener {
     private SearchModel mModel;
@@ -30,5 +33,16 @@ public class SearchPresenter extends BasePresenter<SearchView> implements Search
     public void getSearchedNews(String mSearch) {
         mModel.getSearch(mSearch);
 
+    }
+
+    @Override
+    public void onSearchResponse(List<Article> articles) {
+        if(getView()!=null)
+            getView().setSearchResult(articles);
+    }
+
+    public void noSearchQuery() {
+        if(getView()!=null)
+            getView().clearAdapter();
     }
 }

@@ -13,7 +13,7 @@ import retrofit2.Response;
 
 
 public abstract class NetworkResponse<T> implements Callback<T> {
-    private CommonResponseHandler handler;
+    private final CommonResponseHandler handler;
 
     public NetworkResponse(CommonResponseHandler handler){
         this.handler = handler;

@@ -6,7 +6,7 @@ import com.rishabh.newstand.base.BaseView;
  * Created by appinventiv on 27/3/18.
  */
 
-public interface HeadlinesView extends BaseView {
+interface HeadlinesView extends BaseView {
 
     void getHeadlinesType();
 

@@ -4,6 +4,7 @@ package com.rishabh.newstand.home.sources;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,11 +20,6 @@ import android.widget.Toast;
 import com.rishabh.newstand.R;
 import com.rishabh.newstand.base.BaseFragment;
 import com.rishabh.newstand.data.database.viewmodel.MainViewModel;
-import com.rishabh.newstand.home.news.headlines.ArticlesAdapter;
-import com.rishabh.newstand.home.news.headlines.HeadlinesPresenter;
-import com.rishabh.newstand.home.news.headlines.HeadlinesView;
-import com.rishabh.newstand.home.news.newsDetail.MovieDetails;
-import com.rishabh.newstand.pojo.headlinesresponse.Article;
 import com.rishabh.newstand.pojo.sources.Source;
 import com.rishabh.newstand.utils.AppConstants;
 
@@ -36,12 +32,12 @@ import butterknife.Unbinder;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SourcesFragment extends BaseFragment implements SourcesView, ArticlesAdapter.ArticleListener, SourceAdapter.SourceListener {
+public class SourcesFragment extends BaseFragment implements SourcesView, SourceAdapter.SourceListener {
 
 
     @BindView(R.id.rv)
     RecyclerView rv;
-    Unbinder unbinder;
+    private Unbinder unbinder;
     private SourcesPresenter presenter;
     private SourceAdapter sourceAdapter;
 
@@ -92,10 +88,7 @@ public class SourcesFragment extends BaseFragment implements SourcesView, Articl
         outState.putBoolean(AppConstants.KEY_SAVED_INSTANCE, true);
     }
 
-    @Override
-    public void itemClicked(Article result) {
-        //    getActivity().startActivity(new Intent(getActivity(), MovieDetails.class).putExtra(AppConstants.KEY_ARTICLE, result));
-    }
+
 
     @Override
     public void initView() {
@@ -132,7 +125,9 @@ public class SourcesFragment extends BaseFragment implements SourcesView, Articl
             i.setData(Uri.parse(url));
             startActivity(i);
         } catch (Exception e) {
-            Toast.makeText(getActivity(), "Browser not found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.s_browser_not_found), Toast.LENGTH_SHORT).show();
         }
     }
+
+
 }

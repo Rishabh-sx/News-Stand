@@ -1,5 +1,6 @@
 package com.rishabh.newstand.home.news.headlines;
 
+import com.google.gson.Gson;
 import com.rishabh.newstand.base.BaseModel;
 import com.rishabh.newstand.data.database.AppExecutors;
 import com.rishabh.newstand.network.NetworkResponse;
@@ -9,6 +10,7 @@ import com.rishabh.newstand.pojo.headlinesresponse.HeadlinesResponse;
 import com.rishabh.newstand.utils.AppConstants;
 
 import java.util.HashMap;
+import java.util.List;
 
 
 class HeadlinesModel extends BaseModel<HeadlinesModelListener> {
@@ -26,10 +28,10 @@ class HeadlinesModel extends BaseModel<HeadlinesModelListener> {
 
     public void getHeadlines(final String headlineType) {
 
-        final HashMap<String,String> hashMap = new HashMap<>();
-        hashMap.put(AppConstants.KEY_CATEGORY,headlineType);
-        hashMap.put(AppConstants.KEY_COUNTRY,"us");
-        hashMap.put(AppConstants.KEY_API_KEY,AppConstants.NEWS_API_KEY);
+        final HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put(AppConstants.KEY_CATEGORY, headlineType);
+        hashMap.put(AppConstants.KEY_COUNTRY, "us");
+        hashMap.put(AppConstants.KEY_API_KEY, AppConstants.NEWS_API_KEY);
 
         getDataManager().getHeadlines(hashMap).enqueue(new NetworkResponse<HeadlinesResponse>(this) {
             @Override
@@ -45,17 +47,18 @@ class HeadlinesModel extends BaseModel<HeadlinesModelListener> {
                         //Update all saved articles by headline type to remove from recent list
                         getDataManager().getDatabase().newsDao().updateRecentArticlesByHeadlines(headlineType);
 
-                        for (Article article: body.getArticles()){
-                            if(getDataManager().getDatabase().newsDao().
+
+                        for (Article article : body.getArticles()) {
+                            if (getDataManager().getDatabase().newsDao().
                                     checkIfExistInSavedArticles
-                                            (article.getUrl(),article.getPublishedAt())>0){
+                                            (article.getUrl(), article.getPublishedAt()) > 0) {
 
                                 article.setHeadlineType(headlineType);
                                 article.setSaved(true);
                                 article.setExistInRecentList(true);
                                 getDataManager().getDatabase().newsDao().updateArticle(article);
 
-                            }else {
+                            } else {
                                 article.setSaved(false);
                                 article.setExistInRecentList(true);
                                 article.setHeadlineType(headlineType);
@@ -63,6 +66,10 @@ class HeadlinesModel extends BaseModel<HeadlinesModelListener> {
 
                             }
                         }
+                        if(headlineType.equals(AppConstants.KEY_POPULAR)){
+                            saveArticlesInPreference(body.getArticles());
+                        }
+
                     }
                 });
             }
@@ -77,5 +84,15 @@ class HeadlinesModel extends BaseModel<HeadlinesModelListener> {
 
             }
         });
+    }
+
+    public void saveArticlesInPreference(List<Article> articles) {
+
+        while (articles.size()>5){
+            articles.remove(articles.size()-1);
+        }
+
+        getDataManager().getPreferenceManager().setString(AppConstants.KEY_POPULAR,
+                new Gson().toJson(articles));
     }
 }

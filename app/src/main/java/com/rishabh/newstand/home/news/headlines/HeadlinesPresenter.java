@@ -1,7 +1,10 @@
 package com.rishabh.newstand.home.news.headlines;
 
 import com.rishabh.newstand.base.BasePresenter;
+import com.rishabh.newstand.pojo.headlinesresponse.Article;
 import com.rishabh.newstand.utils.AppConstants;
+
+import java.util.List;
 
 /**
  * Created by appinventiv on 27/3/18.
@@ -56,4 +59,5 @@ public class HeadlinesPresenter extends BasePresenter<HeadlinesView> implements 
             getView().initListeners(fragmentType);
         }
     }
+
 }

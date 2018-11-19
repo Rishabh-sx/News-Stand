@@ -1,6 +1,7 @@
 package com.rishabh.newstand.home.news;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,7 +16,10 @@ import android.view.ViewGroup;
 
 import com.rishabh.newstand.R;
 import com.rishabh.newstand.base.BaseFragment;
+import com.rishabh.newstand.base.BaseView;
+import com.rishabh.newstand.home.BaseHost;
 import com.rishabh.newstand.home.news.headlines.HeadLinesFragment;
+import com.rishabh.newstand.pojo.headlinesresponse.Article;
 import com.rishabh.newstand.utils.AppConstants;
 
 import java.util.ArrayList;
@@ -28,10 +32,10 @@ import butterknife.Unbinder;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NewsFragment extends BaseFragment implements NewsView {
+public class NewsFragment extends BaseFragment implements NewsView, HeadLinesFragment.IHeadlinesFragmentHost {
 
 
-    Unbinder unbinder;
+    private Unbinder unbinder;
     /*   @BindView(R.id.tabs)
        TabLayout tabs;*/
     @BindView(R.id.view_pager)
@@ -40,9 +44,24 @@ public class NewsFragment extends BaseFragment implements NewsView {
     PagerTabStrip pagerTitleStrip;
 
     private NewsPresenter presenter;
+    private INewsFragmentHost mHost;
 
     public NewsFragment() {
         // Required empty public constructor
+    }
+
+    public interface INewsFragmentHost extends BaseHost {
+    }
+
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (getActivity() instanceof INewsFragmentHost) {
+            mHost = (INewsFragmentHost) getActivity();
+        } else {
+            throw new IllegalStateException("Host must Implement INewsFragmentHost");
+        }
     }
 
 
@@ -71,12 +90,7 @@ public class NewsFragment extends BaseFragment implements NewsView {
      * Method to setup ViewPager
      */
     private void setupViewPager() {
-        //     tabs.setupWithViewPager(viewPager);
 
-       /* pagerTitleStrip.setDrawFullUnderline(false);
-        pagerTitleStrip.setTabIndicatorColor(getActivity().getResources().getColor(R.color.colorAccent));
-        pagerTitleStrip.setText
-*/
         ViewPagerAdapter pagerAdapter = new ViewPagerAdapter(getChildFragmentManager());
 
         pagerAdapter.addFragment(HeadLinesFragment.getInstance(AppConstants.KEY_POPULAR),
@@ -156,4 +170,13 @@ public class NewsFragment extends BaseFragment implements NewsView {
         }
     }
 
+    @Override
+    public void openArticleDetail(Article article) {
+        mHost.openArticleDetail(article);
+    }
+
+    @Override
+    public void share(String url) {
+        mHost.share(url);
+    }
 }

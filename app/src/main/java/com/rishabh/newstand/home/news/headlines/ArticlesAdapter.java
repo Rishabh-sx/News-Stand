@@ -12,12 +12,11 @@ import com.bumptech.glide.Glide;
 import com.rishabh.newstand.R;
 import com.rishabh.newstand.pojo.headlinesresponse.Article;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import butterknife.BindView;
@@ -26,7 +25,12 @@ import butterknife.ButterKnife;
 public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.HeadlinesViewHolder> {
 
 
-    private List<Article> articleList;
+    public List<Article> getArticleList() {
+        return articleList;
+    }
+
+    private final List<Article> articleList;
+
     private ArticleListener articleListener;
 
     public ArticlesAdapter(ArticleListener articleListener) {
@@ -61,7 +65,14 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.Headli
         notifyDataSetChanged();
     }
 
+    public void clearSearchList() {
+        articleList.clear();
+        notifyDataSetChanged();
+    }
+
     class HeadlinesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        @BindView(R.id.share)
+        ImageView share;
         @BindView(R.id.image)
         ImageView image;
         @BindView(R.id.title)
@@ -69,18 +80,23 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.Headli
         @BindView(R.id.time)
         TextView time;
 
-        public HeadlinesViewHolder(@NonNull View itemView) {
+        HeadlinesViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        public void bind(HeadlinesViewHolder holder, Article article) {
+        public void bind(HeadlinesViewHolder holder, final Article article) {
 
             Glide.with(holder.image.getContext()).load(article.getUrlToImage()).asBitmap().into(holder.image);
             holder.title.setText(article.getTitle());
-            holder.time.setText(article.getPublishedAt());
+            holder.time.setText(formatDate(article.getPublishedAt()));
             holder.itemView.setOnClickListener(this);
-
+            holder.share.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                articleListener.share(article.getUrl());
+                }
+            });
         }
 
         @Override
@@ -89,7 +105,32 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.Headli
         }
     }
 
+
+    public String formatDate(String createdAt) {
+        SimpleDateFormat form = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        form.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date date = null;
+        try {
+            date = form.parse(createdAt);
+            Calendar cal = Calendar.getInstance();
+            TimeZone tz = cal.getTimeZone();
+            form.setTimeZone(tz);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+            simpleDateFormat.setTimeZone(tz);//HH:mm
+            return simpleDateFormat.format(date);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+
     public interface ArticleListener {
         void itemClicked(Article result);
+
+        void share(String url);
     }
+
+
 }

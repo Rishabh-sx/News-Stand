@@ -33,7 +33,8 @@ class SearchModel extends BaseModel<SearchModelListener> {
         getDataManager().getSearch(createResponsePayload(search)).enqueue(new NetworkResponse<HeadlinesResponse>(this) {
             @Override
             public void onSuccess(final HeadlinesResponse body) {
-
+                    if(getListener()!=null)
+                        getListener().onSearchResponse(body.getArticles());
             }
 
             @Override

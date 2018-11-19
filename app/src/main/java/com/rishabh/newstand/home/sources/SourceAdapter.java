@@ -20,7 +20,7 @@ public class SourceAdapter extends RecyclerView.Adapter<SourceAdapter.SourceView
 
 
 
-    private List<Source> sourceList;
+    private final List<Source> sourceList;
     private SourceListener sourceListener;
 
     public SourceAdapter(SourceListener sourceListener) {
@@ -61,12 +61,12 @@ public class SourceAdapter extends RecyclerView.Adapter<SourceAdapter.SourceView
         @BindView(R.id.desc)
         TextView desc;
 
-        public SourceViewHolder(@NonNull View itemView) {
+        SourceViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        public void bind(SourceViewHolder holder, Source source) {
+        void bind(SourceViewHolder holder, Source source) {
             holder.itemView.setOnClickListener(this);
             holder.title.setText(source.getName());
             holder.desc.setText(source.getDescription());
