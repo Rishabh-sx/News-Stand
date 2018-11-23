@@ -13,4 +13,6 @@ interface HeadlinesView extends BaseView {
     void initListeners(String fragmentType);
 
     void setAdapters();
+
+    void refreshWidget();
 }

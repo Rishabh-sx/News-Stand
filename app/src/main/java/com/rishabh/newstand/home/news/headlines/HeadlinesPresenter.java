@@ -60,4 +60,9 @@ public class HeadlinesPresenter extends BasePresenter<HeadlinesView> implements 
         }
     }
 
+    @Override
+    public void refreshWidget() {
+        if(getView()!=null)
+            getView().refreshWidget();
+    }
 }

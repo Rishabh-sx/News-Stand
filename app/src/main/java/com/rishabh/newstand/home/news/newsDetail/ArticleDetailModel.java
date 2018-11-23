@@ -8,11 +8,11 @@ import com.rishabh.newstand.pojo.headlinesresponse.Article;
  * Created by appinventiv on 27/3/18.
  */
 
-class MovieDetailModel extends BaseModel<MovieDetailModelListener> {
+class ArticleDetailModel extends BaseModel<ArticleDetailModelListener> {
 
     private static final String TAG = "MovieListModel";
 
-    public MovieDetailModel(MovieDetailModelListener listener) {
+    public ArticleDetailModel(ArticleDetailModelListener listener) {
         super(listener);
     }
 

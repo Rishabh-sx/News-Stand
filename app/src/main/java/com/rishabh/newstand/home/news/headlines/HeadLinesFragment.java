@@ -1,10 +1,14 @@
 package com.rishabh.newstand.home.news.headlines;
 
 
+import android.appwidget.AppWidgetManager;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,6 +24,7 @@ import com.rishabh.newstand.data.database.viewmodel.MainViewModel;
 import com.rishabh.newstand.home.BaseHost;
 import com.rishabh.newstand.pojo.headlinesresponse.Article;
 import com.rishabh.newstand.utils.AppConstants;
+import com.rishabh.newstand.widget.NewsStandWidget;
 
 import java.util.List;
 
@@ -40,10 +45,8 @@ public class HeadLinesFragment extends BaseFragment implements HeadlinesView, Ar
     private String fragmentType;
     private ArticlesAdapter articlesAdapter;
     private IHeadlinesFragmentHost mHost;
+    private Parcelable savedRecyclerLayoutState;
 
-    public HeadLinesFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -71,6 +74,7 @@ public class HeadLinesFragment extends BaseFragment implements HeadlinesView, Ar
         if (savedInstanceState == null) {
             presenter.initView();
         } else {
+            savedRecyclerLayoutState = savedInstanceState.getParcelable(AppConstants.STATE);
             fragmentType = savedInstanceState.getString(AppConstants.KEY);
             presenter.savedInstanceStateFlow(fragmentType);
         }
@@ -124,6 +128,10 @@ public class HeadLinesFragment extends BaseFragment implements HeadlinesView, Ar
                 @Override
                 public void onChanged(@Nullable List<Article> articles) {
                     articlesAdapter.setArticleList(articles);
+                    if(savedRecyclerLayoutState!=null && rv.getLayoutManager()!=null){
+                        rv.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+                        savedRecyclerLayoutState=null;
+                    }
                 }
             });
         } else {
@@ -132,6 +140,10 @@ public class HeadLinesFragment extends BaseFragment implements HeadlinesView, Ar
                 @Override
                 public void onChanged(@Nullable List<Article> articles) {
                     articlesAdapter.setArticleList(articles);
+                    if(savedRecyclerLayoutState!=null && rv.getLayoutManager()!=null){
+                        rv.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+                        savedRecyclerLayoutState=null;
+                    }
                 }
             });
 
@@ -142,6 +154,8 @@ public class HeadLinesFragment extends BaseFragment implements HeadlinesView, Ar
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(AppConstants.KEY, fragmentType);
+        if (rv.getLayoutManager() != null)
+            outState.putParcelable(AppConstants.STATE, rv.getLayoutManager().onSaveInstanceState());
     }
 
     @Override
@@ -156,5 +170,14 @@ public class HeadLinesFragment extends BaseFragment implements HeadlinesView, Ar
     @Override
     public void share(String url) {
         mHost.share(url);
+    }
+
+    @Override
+    public void refreshWidget() {
+        if (getActivity() != null) {
+            Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+            intent.setComponent(new ComponentName(getActivity(), NewsStandWidget.class));
+            getActivity().sendBroadcast(intent);
+        }
     }
 }

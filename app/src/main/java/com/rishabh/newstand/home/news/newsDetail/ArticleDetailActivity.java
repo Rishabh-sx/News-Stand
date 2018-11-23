@@ -1,5 +1,7 @@
 package com.rishabh.newstand.home.news.newsDetail;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
@@ -14,8 +16,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.graphics.Palette;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.Spanned;
@@ -33,6 +33,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.rishabh.newstand.SaveImageTask;
 import com.rishabh.newstand.R;
 import com.rishabh.newstand.base.BaseActivity;
 import com.rishabh.newstand.pojo.headlinesresponse.Article;
@@ -42,8 +44,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MovieDetails extends BaseActivity implements MovieDetailView {
+import static android.view.View.GONE;
 
+public class ArticleDetailActivity extends BaseActivity implements
+        ArticleDetailView, SaveImageTask.AsyncListener {
+
+    public static final String MOST_SAVED = "Most Saved";
+    public static final String TEXT = "Text";
     @BindView(R.id.image)
     ImageView image;
     @BindView(R.id.toolbar)
@@ -58,22 +65,16 @@ public class MovieDetails extends BaseActivity implements MovieDetailView {
     TextView description;
     @BindView(R.id.scroll)
     NestedScrollView scroll;
-    @BindView(R.id.rv_trailers)
-    RecyclerView rvTrailers;
-    @BindView(R.id.card_trailers)
-    CardView cardTrailers;
-    @BindView(R.id.rv_reviews)
-    RecyclerView rvReviews;
-    @BindView(R.id.card_reviews)
-    CardView cardReviews;
     @BindView(R.id.mark_fav_unfave)
     ImageView markFavUnfave;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private Article article;
-    private MovieDetailPresenter movieDetailPresenter;
+    private ArticleDetailPresenter movieDetailPresenter;
     private boolean isReviewQueried;
     private boolean isTrailerQueried;
     private boolean isSearchedArticle;
+    private FirebaseAnalytics mFirebaseAnalytics;
+    private Bitmap bitmap;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -83,13 +84,13 @@ public class MovieDetails extends BaseActivity implements MovieDetailView {
         article = getArticle();
         isSearchedArticle = isSearched();
         ButterKnife.bind(this);
-        movieDetailPresenter = new MovieDetailPresenter(this);
+        movieDetailPresenter = new ArticleDetailPresenter(this);
         movieDetailPresenter.initView();
 
     }
 
     private boolean isSearched() {
-        return getIntent().getBooleanExtra(AppConstants.KEY_SEARCHED_ARTICLE,false);
+        return getIntent().getBooleanExtra(AppConstants.KEY_SEARCHED_ARTICLE, false);
     }
 
     private Article getArticle() {
@@ -161,6 +162,7 @@ public class MovieDetails extends BaseActivity implements MovieDetailView {
     public void initViews() {
 
 
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -169,9 +171,9 @@ public class MovieDetails extends BaseActivity implements MovieDetailView {
         collapsingToolbarLayout.setTitle(itemTitle);
         collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
 
-        if(isSearchedArticle){
+        if (isSearchedArticle) {
             markFavUnfave.setVisibility(View.GONE);
-        }else {
+        } else {
             markFavUnfave.setVisibility(View.VISIBLE);
         }
         Glide.with(image.getContext())
@@ -191,7 +193,7 @@ public class MovieDetails extends BaseActivity implements MovieDetailView {
 
                 image.setImageBitmap(resource);
                 if (image.getDrawable() != null) {
-                    Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
+                    bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
                     Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                         public void onGenerated(Palette palette) {
                             applyPalette(palette);
@@ -203,14 +205,14 @@ public class MovieDetails extends BaseActivity implements MovieDetailView {
         }).into(image);
 
         title.setText(article.getTitle());
-        if (article.getContent()!=null) {
-            String content[]= article.getContent().split("\\s+(?=\\[)");
-            if(content.length >=2) {
+        if (article.getContent() != null) {
+            String content[] = article.getContent().split("\\s+(?=\\[)");
+            if (content.length >= 2) {
                 String viewMore = content[1];
                 String message = content[0];
-            description.setText(String.format("%s %s",message,viewMore.replace(viewMore,
-                    getString(R.string.s_view_more))));
-            addClickToViewMore();
+                description.setText(String.format("%s %s", message, viewMore.replace(viewMore,
+                        getString(R.string.s_view_more))));
+                addClickToViewMore();
             }
         }
 
@@ -219,33 +221,47 @@ public class MovieDetails extends BaseActivity implements MovieDetailView {
     private void addClickToViewMore() {
         Spannable span = Spannable.Factory.getInstance().newSpannable(description.getText().toString());
         span.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    String url = article.getUrl();
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(url));
-                    startActivity(i);
-                } catch (Exception e) {
-                    Toast.makeText(MovieDetails.this, getString(R.string.s_brwoser_not_found), Toast.LENGTH_SHORT).show();
-                }
-            } }, description.getText().toString().indexOf(getString(R.string.s_view_more)),
+                         @Override
+                         public void onClick(View v) {
+                             try {
+                                 String url = article.getUrl();
+                                 Intent i = new Intent(Intent.ACTION_VIEW);
+                                 i.setData(Uri.parse(url));
+                                 startActivity(i);
+                             } catch (Exception e) {
+                                 Toast.makeText(ArticleDetailActivity.this, getString(R.string.s_brwoser_not_found), Toast.LENGTH_SHORT).show();
+                             }
+                         }
+                     }, description.getText().toString().indexOf(getString(R.string.s_view_more)),
                 description.getText().toString().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-       span.setSpan(new ForegroundColorSpan(getColor(R.color.colorAccent)),description.getText().toString().indexOf(getString(R.string.s_view_more)),
-               description.getText().toString().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        span.setSpan(new ForegroundColorSpan(getColor(R.color.colorAccent)), description.getText().toString().indexOf(getString(R.string.s_view_more)),
+                description.getText().toString().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 
         description.setText(span);
         description.setMovementMethod(LinkMovementMethod.getInstance());
         updateArticleSaveIcon(article.isSaved());
+        image.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                /*if(bitmap!=null)
+                new SaveImageTask(bitmap,ArticleDetailActivity.this).execute();
+                */
+                showSaveDialog();
+                return false;
+            }
+        });
     }
 
     @OnClick(R.id.mark_fav_unfave)
     public void onViewClicked() {
+
         article.setSaved(!article.isSaved());
         movieDetailPresenter.updateArticle(article);
         updateArticleSaveIcon(article.isSaved());
+        if (article.getSource() != null && article.getSource().getName() != null)
+            logEventForAnalytics(article.getSource().getName());
     }
 
     private void updateArticleSaveIcon(boolean saved) {
@@ -267,4 +283,43 @@ public class MovieDetails extends BaseActivity implements MovieDetailView {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private void logEventForAnalytics(String saved) {
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, MOST_SAVED);
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, saved);
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, TEXT);
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+    }
+
+    @Override
+    public void imageSavedStatus(String s) {
+        if (s != null) {
+            Toast.makeText(this, "Image saved successfully", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Oops, Something went wrong !", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showSaveDialog() {
+
+        final Dialog saveImageDialog = new Dialog(this, R.style.customDialog);
+        saveImageDialog.setContentView(R.layout.dialog_end_stream);
+
+        saveImageDialog.setCancelable(true);
+
+        TextView tvSave = saveImageDialog.findViewById(R.id.tv_save_image);
+
+        tvSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new SaveImageTask(bitmap, ArticleDetailActivity.this).execute();
+                saveImageDialog.dismiss();
+            }
+        });
+
+        saveImageDialog.show();
+    }
+
 }
+

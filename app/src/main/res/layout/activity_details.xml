@@ -19,9 +19,6 @@
 
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <!--
-            app:expandedTitleMarginEnd="64dp"
-            app:expandedTitleMarginStart="48dp"-->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -33,7 +30,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:fitsSystemWindows="true"
-                    android:scaleType="centerCrop" />
+                    android:scaleType="centerCrop"
+                    android:contentDescription="@string/news_image" />
 
 
             </RelativeLayout>
@@ -63,7 +61,6 @@
             android:orientation="vertical">
 
             <android.support.v7.widget.CardView
-
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -89,8 +86,8 @@
                         android:id="@+id/title"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/spacing_large"
-                        android:layout_marginRight="@dimen/spacing_large"
+                        android:layout_marginStart="@dimen/spacing_large"
+                        android:layout_marginEnd="@dimen/spacing_large"
                         android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
 
@@ -100,7 +97,8 @@
                             android:id="@+id/mark_fav_unfave"
                             android:src="@drawable/ic_saved"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:contentDescription="@string/mark_save_unsave" />
                     </LinearLayout>
 
                     <!--<TextView
@@ -139,85 +137,8 @@
 
 
             </android.support.v7.widget.CardView>
-
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/card_trailers"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:visibility="gone"
-                android:paddingEnd="@dimen/spacing_large"
-                android:paddingStart="@dimen/spacing_large"
-
-                app:cardElevation="@dimen/card_elevation"
-                app:cardUseCompatPadding="true">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/spacing_large"
-                        android:text="Trailers"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/rv_trailers"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingEnd="@dimen/spacing_large"
-                        android:paddingStart="@dimen/spacing_large"
-                        android:paddingBottom="@dimen/spacing_large">
-
-                    </android.support.v7.widget.RecyclerView>
-
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/card_reviews"
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-
-                app:cardElevation="@dimen/card_elevation"
-                app:cardUseCompatPadding="true">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/spacing_large"
-                        android:text="Reviews"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/rv_reviews"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingEnd="@dimen/spacing_large"
-                        android:paddingStart="@dimen/spacing_large">
-
-                    </android.support.v7.widget.RecyclerView>
-
-                </LinearLayout>
-            </android.support.v7.widget.CardView>
-
-
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
-
 
 </android.support.design.widget.CoordinatorLayout>

@@ -11,9 +11,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.rishabh.newstand.R;
 import com.rishabh.newstand.base.BaseActivity;
-import com.rishabh.newstand.home.news.newsDetail.MovieDetails;
+import com.rishabh.newstand.home.news.newsDetail.ArticleDetailActivity;
 import com.rishabh.newstand.home.search.searched.SearchFragment;
 import com.rishabh.newstand.pojo.headlinesresponse.Article;
 import com.rishabh.newstand.utils.AppConstants;
@@ -26,6 +27,9 @@ import butterknife.OnClick;
 public class SearchActivity extends BaseActivity implements SearchActivityView,SearchFragment.ISearchFragmentHost {
 
 
+    public static final String SEARCHED = "Searched";
+    public static final String ITEM_SEARCHED = "Item Searched";
+    public static final String TEXT = "Text";
     @BindView(R.id.iv_search)
     ImageView ivSearch;
     @BindView(R.id.tv_title)
@@ -37,16 +41,27 @@ public class SearchActivity extends BaseActivity implements SearchActivityView,S
     @BindView(R.id.container)
     ConstraintLayout container;
     private SearchActivityPresenter mPresenter;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ButterKnife.bind(this);
+        logEventForAnalytics();
         mPresenter = new SearchActivityPresenter(this);
         mPresenter.initView();
         if(savedInstanceState == null || !savedInstanceState.containsKey(AppConstants.KEY))
             addFragment(R.id.fl_container, SearchFragment.getInstance(), SearchFragment.class.getName());
 
+    }
+
+    private void logEventForAnalytics() {
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, SEARCHED);
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, ITEM_SEARCHED);
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, TEXT);
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
     @Override
@@ -73,7 +88,7 @@ public class SearchActivity extends BaseActivity implements SearchActivityView,S
     @Override
     public void openArticleDetail(Article article) {
         startActivity(
-                new Intent(this, MovieDetails.class)
+                new Intent(this, ArticleDetailActivity.class)
                 .putExtra(AppConstants.KEY_ARTICLE, article)
                 .putExtra(AppConstants.KEY_SEARCHED_ARTICLE,true));
 

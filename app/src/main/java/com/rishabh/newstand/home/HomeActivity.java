@@ -12,7 +12,7 @@ import com.rishabh.newstand.R;
 import com.rishabh.newstand.base.BaseActivity;
 import com.rishabh.newstand.home.news.NewsFragment;
 import com.rishabh.newstand.home.news.headlines.HeadLinesFragment;
-import com.rishabh.newstand.home.news.newsDetail.MovieDetails;
+import com.rishabh.newstand.home.news.newsDetail.ArticleDetailActivity;
 import com.rishabh.newstand.home.search.SearchActivity;
 import com.rishabh.newstand.home.sources.SourcesFragment;
 import com.rishabh.newstand.pojo.headlinesresponse.Article;
@@ -84,7 +84,7 @@ public class HomeActivity extends BaseActivity implements HomeView, NewsFragment
 
     @Override
     public void openArticleDetail(Article article) {
-        startActivity(new Intent(this, MovieDetails.class)
+        startActivity(new Intent(this, ArticleDetailActivity.class)
                 .putExtra(AppConstants.KEY_ARTICLE, article)
                 .putExtra(AppConstants.KEY_SEARCHED_ARTICLE, false));
     }

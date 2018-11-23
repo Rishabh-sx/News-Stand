@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -40,6 +41,7 @@ public class SourcesFragment extends BaseFragment implements SourcesView, Source
     private Unbinder unbinder;
     private SourcesPresenter presenter;
     private SourceAdapter sourceAdapter;
+    private Parcelable savedRecyclerLayoutState;
 
     public SourcesFragment() {
         // Required empty public constructor
@@ -59,7 +61,8 @@ public class SourcesFragment extends BaseFragment implements SourcesView, Source
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (savedInstanceState != null && savedInstanceState.getBoolean(AppConstants.KEY_SAVED)) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(AppConstants.STATE)) {
+            savedRecyclerLayoutState = savedInstanceState.getParcelable(AppConstants.STATE);
             presenter.fragmentConfigChanged();
         } else {
             presenter.onViewCreated();
@@ -85,7 +88,8 @@ public class SourcesFragment extends BaseFragment implements SourcesView, Source
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(AppConstants.KEY_SAVED_INSTANCE, true);
+        if (rv.getLayoutManager() != null)
+            outState.putParcelable(AppConstants.STATE, rv.getLayoutManager().onSaveInstanceState());
     }
 
 
@@ -113,6 +117,11 @@ public class SourcesFragment extends BaseFragment implements SourcesView, Source
             @Override
             public void onChanged(@Nullable List<Source> sources) {
                 sourceAdapter.setArticleList(sources);
+                if(savedRecyclerLayoutState!=null && rv.getLayoutManager()!=null){
+                    rv.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+                    savedRecyclerLayoutState=null;
+                }
+
             }
         });
     }

@@ -16,38 +16,6 @@ import java.util.List;
 @Dao
 public interface NewsDao {
 
-/*
-    @Query("SELECT * FROM movies")
-    LiveData<List<Result>> loadAllMovies();
-
-    @Insert
-    void insertReview(com.rishabh.moviestage.pojo.reviews.Result review);
-
-    @Insert
-    void insertTrailer(com.rishabh.moviestage.pojo.trailers.Result trailer);
-
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    void updateMovie(Result taskEntry);
-
-    @Delete
-    void deleteTask(Result taskEntry);
-
-    @Query("SELECT * FROM movies WHERE id = :id")
-    LiveData<Result> loadMovieById(int id);
-
-    @Query("SELECT * FROM reviews WHERE movie_id=:movieId")
-    LiveData<List<com.rishabh.moviestage.pojo.reviews.Result>> loadReviews(final int movieId);
-
-    @Query("SELECT * FROM trailers WHERE movie_id=:movieId")
-    LiveData<List<com.rishabh.moviestage.pojo.trailers.Result>> loadTrailers(final int movieId);
-
-    @Query("DELETE FROM movies")
-    void deleteAll();
-
-    @Query("SELECT * FROM movies WHERE isFav =1")
-    LiveData<List<Result>> loadFavMovies();
-*/
-
     @Query("DELETE FROM article WHERE headlineType =:headlineType AND isSaved = 0")
     void delAllUnsavedArticlesByHeadline(String headlineType);
 
@@ -77,4 +45,5 @@ public interface NewsDao {
 
     @Query("SELECT * FROM sources")
     LiveData<List<Source>> loadSources();
+
 }

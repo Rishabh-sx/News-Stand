@@ -19,4 +19,6 @@ final public class AppConstants {
     public static final String KEY_SAVED_PREF = "saved_news";
 
     public static final String KEY = "key";
+    public static final String POSITION = "position";
+    public static final String STATE ="state" ;
 }

@@ -54,6 +54,7 @@ public class SearchFragment extends BaseFragment implements SearchView, TextWatc
     private SearchPresenter mPresenter;
     private ArticlesAdapter articlesAdapter;
     private ISearchFragmentHost mHost;
+    private Parcelable savedRecyclerLayoutState;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -81,7 +82,14 @@ public class SearchFragment extends BaseFragment implements SearchView, TextWatc
         mPresenter = new SearchPresenter(this);
         mPresenter.initView();
         if(savedInstanceState!=null && savedInstanceState.containsKey(AppConstants.KEY_SEARCHED_ARTICLE)){
+            savedRecyclerLayoutState = savedInstanceState.getParcelable(AppConstants.STATE);
+
             setSearchResult(savedInstanceState.<Article>getParcelableArrayList(AppConstants.KEY_SEARCHED_ARTICLE));
+
+            if(savedRecyclerLayoutState!=null && rvSearchList.getLayoutManager()!=null){
+                rvSearchList.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+                savedRecyclerLayoutState=null;
+            }
         }
         return view;
     }
@@ -163,5 +171,7 @@ public class SearchFragment extends BaseFragment implements SearchView, TextWatc
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(AppConstants.KEY_SEARCHED_ARTICLE, (ArrayList<? extends Parcelable>) articlesAdapter.getArticleList());
+        if (rvSearchList.getLayoutManager() != null)
+            outState.putParcelable(AppConstants.STATE, rvSearchList.getLayoutManager().onSaveInstanceState());
     }
 }

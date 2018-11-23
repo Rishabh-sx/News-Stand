@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.WindowManager;
 
+import com.crashlytics.android.Crashlytics;
 import com.rishabh.newstand.R;
 import com.rishabh.newstand.home.HomeActivity;
 
@@ -19,6 +20,7 @@ public class SplashActivity extends AppCompatActivity {
         enterFullScreenMode();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        //causeCrash();
     }
 
     @Override
@@ -29,7 +31,7 @@ public class SplashActivity extends AppCompatActivity {
         runnable = new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(SplashActivity.this,HomeActivity.class));
+                startActivity(new Intent(SplashActivity.this,HomeActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             }
         };
         handler.postDelayed(runnable, 1500);
@@ -49,5 +51,8 @@ public class SplashActivity extends AppCompatActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
     }
-
+    private void causeCrash() {
+     //   throw new NullPointerException("Fake null pointer exception");
+        Crashlytics.getInstance().crash();
+    }
 }

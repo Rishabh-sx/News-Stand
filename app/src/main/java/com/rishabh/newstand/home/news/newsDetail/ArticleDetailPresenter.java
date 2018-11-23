@@ -8,18 +8,18 @@ import com.rishabh.newstand.pojo.headlinesresponse.Article;
  */
 
 
-public class MovieDetailPresenter extends BasePresenter<MovieDetailView> implements MovieDetailModelListener {
+public class ArticleDetailPresenter extends BasePresenter<ArticleDetailView> implements ArticleDetailModelListener {
 
 
-    private MovieDetailModel model;
+    private ArticleDetailModel model;
 
-    public MovieDetailPresenter(MovieDetailView view) {
+    public ArticleDetailPresenter(ArticleDetailView view) {
         super(view);
     }
 
     @Override
     protected void setModel() {
-        model = new MovieDetailModel(this);
+        model = new ArticleDetailModel(this);
     }
 
     @Override

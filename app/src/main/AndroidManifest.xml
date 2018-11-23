@@ -4,6 +4,7 @@
     package="com.rishabh.newstand">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".NewsStandApplication"
@@ -14,8 +15,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false" />
+
         <activity android:name=".home.HomeActivity"/>
-        <activity android:name=".home.news.newsDetail.MovieDetails" />
+        <activity android:name=".home.news.newsDetail.ArticleDetailActivity" />
         <activity android:name=".home.search.SearchActivity" />
 
         <receiver android:name=".widget.NewsStandWidget">
@@ -36,6 +42,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name=".widget.MyWidgetRemoteViewsService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"></service>
     </application>
+
 
 </manifest>

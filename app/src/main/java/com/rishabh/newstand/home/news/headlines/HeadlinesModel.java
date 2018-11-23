@@ -1,5 +1,9 @@
 package com.rishabh.newstand.home.news.headlines;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.Intent;
+
 import com.google.gson.Gson;
 import com.rishabh.newstand.base.BaseModel;
 import com.rishabh.newstand.data.database.AppExecutors;
@@ -88,11 +92,14 @@ class HeadlinesModel extends BaseModel<HeadlinesModelListener> {
 
     public void saveArticlesInPreference(List<Article> articles) {
 
-        while (articles.size()>5){
-            articles.remove(articles.size()-1);
-        }
-
         getDataManager().getPreferenceManager().setString(AppConstants.KEY_POPULAR,
                 new Gson().toJson(articles));
+
+        if(getListener()!=null){
+            getListener().refreshWidget();
+        }
     }
+
+
+
 }
