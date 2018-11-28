@@ -35,7 +35,8 @@
 ###### MEETS SPECIFICATIONS
 
 ```
- App integrates two or more Google services. Google service integrations can be a part of Google Play Services or Firebase.
+ App integrates two or more Google services. Google service integrations can be a part of Google Play Services
+ or Firebase.
  
  Each service imported in the build.gradle is used in the app.
  
