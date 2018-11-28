@@ -2,9 +2,9 @@
 
 Common Project Information
 
--App conforms to common standards found in the Android Nanodegree General Project Guidelines
--App is written solely in the Java Programming Language
--App utilizes stable release versions of all libraries, Gradle, and Android Studio.
+- App conforms to common standards found in the Android Nanodegree General Project Guidelines
+- App is written solely in the Java Programming Language
+- App utilizes stable release versions of all libraries, Gradle, and Android Studio.
 
 Core Platform Development
 
